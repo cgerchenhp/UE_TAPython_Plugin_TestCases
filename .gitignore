@@ -127,3 +127,19 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+#.idea
+.idea
+
+#rar
+*.rar
+
+Python/ChameleonDocGenerator/Temp/
+temp.py
+
+Python/ChameleonDocGenerator/Temp/
+
+
+/Python/ChameleonDocGenerator/GeneratedWidgetAPI/*.json
+/Python/Temp/
+/Python/unreal_json/
+/Python/unreal.py

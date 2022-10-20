@@ -1,0 +1,286 @@
+{
+	"TabLabel": "TestCase General",
+	"InitTabSize": [560, 600],
+	"InitTabPosition": [900, 50],
+    "InitPyCmd": "import ChameleonTestCases, importlib; importlib.reload(ChameleonTestCases); chameleon_general_test = ChameleonTestCases.TestPythonAPIs.TestPythonAPIs(%JsonPath)",
+    "Root":
+    {
+        "SVerticalBox":
+        {
+            "Slots": [
+                {
+                    "AutoHeight": true,
+                    "SHeader":
+                    {
+                        "Content":
+                        {
+                            "STextBlock": { "Text": "PythonBPLib", "Justification": "Center"}
+                        }
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "0: Notifications(need easyocr)",
+                                    "OnClick": "chameleon_general_test.test_category_notification()"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_0", "Text": " No Result ", "Justification": "Right" }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "1: Dialogs(manual)",
+                                    "OnClick": "chameleon_general_test.test_category_dialogs()"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_1", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "2: Infos",
+                                    "OnClick": "chameleon_general_test.test_category_get_infos(2)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_2", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "3: Level/Actors",
+                                    "OnClick": "chameleon_general_test.test_category_level_actor(3)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_3", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "4: Viewport",
+                                    "OnClick": "chameleon_general_test.test_category_viewport(4)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_4", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "5: Assets/ContentBrowser",
+                                    "OnClick": "chameleon_general_test.test_category_assets(5)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_5", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "6: redirector",
+                                    "OnClick": "chameleon_general_test.test_category_redirector(6)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_6", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHeader":
+                    {
+                        "Content":
+                        {
+                            "STextBlock": { "Text": "EnumLib, StructLib, DataTableLib", "Justification": "Center"}
+                        }
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "7: Struct/DataTable",
+                                    "OnClick": "chameleon_general_test.test_category_datatable(7)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_7", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHeader":
+                    {
+                        "Content":
+                        {
+                            "STextBlock": { "Text": "LandscapeLib, LevelLib", "Justification": "Center"}
+                        }
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "8: LandscapeLib/LevelLib",
+                                    "OnClick": "chameleon_general_test.test_category_Landscape(8)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_8", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHeader":
+                    {
+                        "Content":
+                        {
+                            "STextBlock": { "Text": "TextureLib, MaterialLib, MeshLib", "Justification": "Center"}
+                        }
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "FillWidth": 0.618,
+                                 "SButton": {
+                                    "Text": "9: Mesh Texture",
+                                    "OnClick": "chameleon_general_test.test_category_Mesh(9)"
+                                }
+                            },
+                            {
+                                "FillWidth": 1,
+                                "Padding": [0, 0, 10, 0],
+                                "STextBlock": { "Aka": "ResultBox_9", "Text": " No Result ", "Justification": "Right"}
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": true,
+                    "SHorizontalBox":
+                    {
+                        "Slots": [
+                            {
+                                "AutoHeight": true,
+                                "STextBlock": { "Aka": "Output", "Text": "" }
+                            },
+                            {
+                                "AutoWidth": true,
+                                "SButton": {
+                                    "ContentPadding": [-4, 4],
+                                    "Text": "Clear",
+                                    "OnClick": "chameleon_general_test.clear_output_logs()"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "AutoHeight": false,
+                    "SMultiLineEditableTextBox":
+                    {
+                        "Aka": "OutputLog",
+                        "Text": "",
+                        "Margin": 10,
+                        "AlwaysShowScrollbars": true,
+                        "Marshaller":  "ChameleonRichText",
+                        "ColorAndOpacity": [0.8, 0.8, 0.8, 1]
+                    }
+                }
+            ]
+        }
+    }
+}
