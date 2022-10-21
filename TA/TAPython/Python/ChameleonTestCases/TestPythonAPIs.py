@@ -4,6 +4,7 @@ import re
 import inspect
 import struct
 import json
+from typing import List
 
 from Utilities.Utils import EObjectFlags
 
@@ -510,19 +511,25 @@ class TestPythonAPIs(metaclass=Singleton):
             print(f"Test Result: {world.get_name()}")
 
     def get_editor_world(self):
-        return unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+            return unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        else:
+            unreal.EditorLevelLibrary.get_editor_world()
 
     def _testcase_get_all_objects(self):
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        # world = self.get_editor_world()
+
+        world = unreal.EditorLevelLibrary.get_editor_world()
+        assert world, "World None"
         self.add_test_log("get_all_objects")
         objects = unreal.PythonBPLib.get_all_objects(world, include_dead=False)
         succ, msg = False, ""
         all_types = set()
-        if len(objects) > 500:
+        if len(objects) > 50:
             for obj in objects:
                 all_types.add(str(type(obj)))
 
-        assert_types = {"<class 'K2Node'>", "<class 'BrushComponent'>", "<class 'WorldSettings'>"}
+        assert_types = {"<class 'ViewportStatsSubsystem'>", "<class 'BrushComponent'>", "<class 'WorldSettings'>"}
         succ = all_types & assert_types == assert_types
         if not succ:
             msg = unreal.log_warning(f"Asset types not all founded: {all_types & all_types}")
@@ -530,7 +537,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_get_objects_by_class(self):
         succ, msg = False, ""
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         self.add_test_log("get_objects_by_class")
         objects = unreal.PythonBPLib.get_objects_by_class(world, unreal.InstancedFoliageActor)
         if len(objects) > 0 and objects[0].static_class().get_name() == "InstancedFoliageActor":
@@ -543,7 +550,7 @@ class TestPythonAPIs(metaclass=Singleton):
         succ, msg = False, ""
         try:
             self.add_test_log("get_actors_from_folder")
-            objects_in_folder = unreal.PythonBPLib.get_actors_from_folder(self.get_editor_world(), "Effects")
+            objects_in_folder = unreal.PythonBPLib.get_actors_from_folder(unreal.EditorLevelLibrary.get_editor_world(), "Effects")
             object_names = {obj.get_name() for obj in objects_in_folder}
             assert_names = {"Blueprint_Effect_Fire_C_1", "Blueprint_Effect_Smoke_C_1"}
             succ = object_names & assert_names == assert_names
@@ -556,7 +563,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_find_actor(self):
         succ, msgs = False, []
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         self.add_test_log("find_actor_by_name")
         actor_by_name = unreal.PythonBPLib.find_actor_by_name("SkyLight_6", world=world) #
         self.add_test_log("find_actors_by_label_name")
@@ -577,7 +584,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_create_folder_in_outliner(self):
         succ, msgs = False, []
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         actor_name = "SkyLight"
         actors_by_label = unreal.PythonBPLib.find_actors_by_label_name("SkyLight", world=world)
         if len(actors_by_label) == 0:
@@ -631,7 +638,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_world_composition(self):
         succ, msgs = False, []
         try:
-            world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             objects = unreal.PythonBPLib.get_objects_by_class(world, unreal.WorldSettings)
             assert objects, "Can't find WorldSettings"
             world_settings = objects[0]
@@ -651,7 +658,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_capture(self):
         succ, msg = False, ""
         self.add_test_log("update_reflection_capture_preview_shape")
-        captures = unreal.PythonBPLib.get_objects_by_class(self.get_editor_world(), unreal.SphereReflectionCapture)
+        captures = unreal.PythonBPLib.get_objects_by_class(unreal.EditorLevelLibrary.get_editor_world(), unreal.SphereReflectionCapture)
         try:
             for capture in captures:
                 unreal.PythonBPLib.update_reflection_capture_preview_shape(capture.get_editor_property("capture_component"))
@@ -669,7 +676,7 @@ class TestPythonAPIs(metaclass=Singleton):
         self.push_call(py_task(self.check_log_by_str, logs_target=[f"Test Result: StarterMap"]), delay_seconds=0.1)
         # 2
         self.push_call(py_task(self._testcase_get_all_objects), delay_seconds=0.1)
-        # 3
+        # # 3
         self.push_call(py_task(self._testcase_get_objects_by_class), delay_seconds=0.1)
         # 4
         self.push_call(py_task(self._testcase_get_actors_from_folder), delay_seconds=0.1)
@@ -757,7 +764,10 @@ class TestPythonAPIs(metaclass=Singleton):
                                                   , unreal.Rotator(0, 0, 90)
                                                   , select_actors=True)
         try:
-            actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_selected_level_actors()
+            if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+                actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_selected_level_actors()
+            else:
+                actors = unreal.EditorLevelLibrary.get_selected_level_actors()
             assert len(actors) == 1, f"Selected actor count not match: {len(actors)} vs one camera actor."
             assert actors[0].static_class().get_name() == "CameraActor", "Selected Actor is not CameraActor"
             succ = True
@@ -769,7 +779,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_pilot_level_actor(self):
         succ, msg = False, ""
         try:
-            world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             camera_actors = unreal.PythonBPLib.get_objects_by_class(world, unreal.CameraActor)
             assert len(camera_actors) == 1, "Camera Actor Count != 1"
             camera = camera_actors[0]
@@ -785,7 +795,7 @@ class TestPythonAPIs(metaclass=Singleton):
         self.add_test_log("get_pilot_level_actor")
         pilot_actor = unreal.PythonBPLib.get_pilot_level_actor()
         try:
-            world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             camera_actors = unreal.PythonBPLib.get_objects_by_class(world, unreal.CameraActor)
             assert pilot_actor == camera_actors[0], f"pilot_actor: {pilot_actor} != {camera_actors[0]}"
 
@@ -797,7 +807,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_componnent(self):
         succ, msgs = False, []
         try:
-            world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             camera_actors = unreal.PythonBPLib.get_objects_by_class(world, unreal.CameraActor)
             camera = camera_actors[0]
             assert camera, "Camera actor invalid"
@@ -876,7 +886,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_properties(self):
         succ, msgs = False, []
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         actor_id_name = "SkyLight_6"
         actor = unreal.PythonBPLib.find_actor_by_name(actor_id_name, world=world) #
         try:
@@ -906,7 +916,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_select_assets(self):
         succ, msgs = False, []
-        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         actor_label_name = "Chair"
         target_mesh_path = '/Game/StarterContent/Props/SM_Chair'
         self.add_test_log("find_actors_by_label_name")
@@ -1106,7 +1116,11 @@ class TestPythonAPIs(metaclass=Singleton):
 
             self.add_test_log("spawn_actor_from_object")
             bp_c_instance = unreal.PythonBPLib.spawn_actor_from_object(bp_c, unreal.Vector.ZERO, select_actors=True)
-            actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_selected_level_actors()
+            if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+                actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_selected_level_actors()
+            else:
+                actors = unreal.EditorLevelLibrary.get_selected_level_actors()
+
             assert len(actors) == 1, f"selected_actor != 0, actor: {len(actors)}"
             bp_actor = actors[0]
             assert bp_actor.get_actor_label() == bp_c_path.rsplit('/', 1)[-1], f"bp_actor label name {bp_actor.get_actor_label()} != { bp_c_path.rsplit('/', 1)[-1]}"
@@ -1263,7 +1277,7 @@ class TestPythonAPIs(metaclass=Singleton):
                 os.remove(export_path)
 
             self.add_test_log("find_actors_by_label_name")
-            actors = unreal.PythonBPLib.find_actors_by_label_name("Chair", world=self.get_editor_world())
+            actors = unreal.PythonBPLib.find_actors_by_label_name("Chair", world=unreal.EditorLevelLibrary.get_editor_world())
             assert actors and len(actors) > 0, f"Find actor: Chair failed. actors None"
 
             self.add_test_log("export_map")
@@ -1351,7 +1365,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_multi_line_trace(self):
         succ, msgs = False, []
         try:
-            world = self.get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             start_locs = [unreal.Vector(x * 100, 0, 10_00) for x in range(15)]
             end_locs = [unreal.Vector(x * 100, 0, -10_00) for x in range(15)]
 
@@ -1369,7 +1383,7 @@ class TestPythonAPIs(metaclass=Singleton):
     def _testcase_sample_height(self):
         succ, msgs = False, []
         try:
-            world = self.get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             center = unreal.Vector(0, 0, 0)
             width = 50_00
             height = 50_00
@@ -1416,7 +1430,7 @@ class TestPythonAPIs(metaclass=Singleton):
         succ, msgs = False, []
         try:
         # 0: delete model that used the material
-            world = self.get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
             assert world.get_name() == "NewMap", "Need load Level: NewMap"
 
             chair_asset = unreal.load_asset('/Game/StarterContent/Props/SM_Chair')
@@ -1531,7 +1545,7 @@ class TestPythonAPIs(metaclass=Singleton):
         self.test_finish(id)
 
 
-    def _delete_assets(self, asset_paths : list[str]):
+    def _delete_assets(self, asset_paths : List[str]):
         for path in asset_paths:
             if unreal.EditorAssetLibrary.does_asset_exist(path):
                 unreal.PythonBPLib.delete_asset(path, show_confirmation=False)
@@ -1918,7 +1932,7 @@ class TestPythonAPIs(metaclass=Singleton):
             unreal.EditorLevelLibrary.new_level_from_template(asset_path=level_path, template_asset_path='/Engine/Maps/Templates/Template_Default.Template_Default')
             # 2. open level
             unreal.EditorLevelLibrary.load_level(level_path)
-            world = self.get_editor_world()
+            world = unreal.EditorLevelLibrary.get_editor_world()
 
             assert world.get_name() == os.path.basename(level_path), f"world name: {world.get_name()} != {os.path.basename(level_path)}"
 
@@ -2003,7 +2017,7 @@ class TestPythonAPIs(metaclass=Singleton):
                                 , unreal.Vector(half_width, half_width,  half_height * 2)
                                 , unreal.Vector(-half_width, half_width, half_height) ]
             for i in range(4):
-                unreal.SystemLibrary.draw_debug_line(self.get_editor_world()
+                unreal.SystemLibrary.draw_debug_line(unreal.EditorLevelLibrary.get_editor_world()
                                                      , corner_locations[i], corner_locations[(i+1) % 4]
                                                      , unreal.LinearColor.RED, duration=10, thickness=200)
             # 3. comps
@@ -2276,7 +2290,7 @@ class TestPythonAPIs(metaclass=Singleton):
 
     def _testcase_sub_levels(self):
         succ, msgs = False, []
-        world = self.get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         self.add_test_log("enable_world_composition")
         unreal.PythonBPLib.enable_world_composition(world, enable=True)
         self.add_test_log("get_levels")
@@ -2286,7 +2300,7 @@ class TestPythonAPIs(metaclass=Singleton):
         self.push_result(succ, msgs)
 
     def _testcast_sub_levels(self):
-        world = self.get_editor_world()
+        world = unreal.EditorLevelLibrary.get_editor_world()
         # unreal.PythonBPLib.enable_world_composition(world, True)
         succ, msgs = False, []
         for tile_y in range(2):
@@ -3097,9 +3111,10 @@ class TestPythonAPIs(metaclass=Singleton):
             self.add_test_log("apply_nanite")
             unreal.PythonMeshLib.apply_nanite(converted_mesh, True)
             # 4 nanite setting
-            settings = converted_mesh.get_editor_property("nanite_settings")
-            assert settings, "setting None"
-            assert settings.enabled, "settings.enabled == False"
+            if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+                settings = converted_mesh.get_editor_property("nanite_settings")
+                assert settings, "setting None"
+                assert settings.enabled, "settings.enabled == False"
             # 5 generat hism
             hism_actor = unreal.PythonBPLib.spawn_actor_from_class(unreal.Actor, unreal.Vector.ZERO)
             hism_actor.set_actor_label("HismActorForTest")
@@ -3125,7 +3140,7 @@ class TestPythonAPIs(metaclass=Singleton):
             count = unreal.PythonMeshLib.get_overlapping_box_count(hism_comp, box=unreal.Box())
             assert count == 0, "overlapping_box_count = 0"
             box = unreal.Box(min=[0, 200*(-0.5), 100], max=[200*10, 200*(2-0.5), 500])
-            unreal.SystemLibrary.draw_debug_box(self.get_editor_world()
+            unreal.SystemLibrary.draw_debug_box(unreal.EditorLevelLibrary.get_editor_world()
                                                 , center=(box.min + box.max)/2
                                                 , extent=(box.min + box.max)/2
                                                 , line_color=unreal.LinearColor.GREEN
@@ -3139,7 +3154,7 @@ class TestPythonAPIs(metaclass=Singleton):
             sphere_radius = 200
             self.add_test_log("get_overlapping_sphere_count")
             overlapping_count = unreal.PythonMeshLib.get_overlapping_sphere_count(hism_comp, sphere_center, sphere_radius)
-            unreal.SystemLibrary.draw_debug_sphere(self.get_editor_world(), sphere_center, sphere_radius, segments=36
+            unreal.SystemLibrary.draw_debug_sphere(unreal.EditorLevelLibrary.get_editor_world(), sphere_center, sphere_radius, segments=36
                                                    , line_color=unreal.LinearColor(1, 0, 0, 0.1), duration=10, thickness=2)
             assert overlapping_count == 5, f"count: {overlapping_count} != 5"
             msgs.append("hism overlapping.")

@@ -65,7 +65,10 @@ def editor_snapshot(window_name):
 def get_latest_snaps(time_from_now_limit:float, group_threshold:float) -> [str]:
     result = []
     prject_folder = unreal.SystemLibrary.get_project_directory()
-    saved_folder = os.path.abspath(os.path.join(prject_folder, "Saved/Screenshots/WindowsEditor"))
+    if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+        saved_folder = os.path.abspath(os.path.join(prject_folder, "Saved/Screenshots/WindowsEditor"))
+    else:
+        saved_folder = os.path.abspath(os.path.join(prject_folder, "Saved/Screenshots/Windows"))
     if not os.path.exists(saved_folder):
         unreal.log_error("Can't find Screenshots folder")
 
