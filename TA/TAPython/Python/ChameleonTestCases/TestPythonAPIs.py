@@ -515,6 +515,7 @@ class TestPythonAPIs(metaclass=Singleton):
             return unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
         else:
             unreal.EditorLevelLibrary.get_editor_world()
+            
 
     def _testcase_get_all_objects(self):
         # world = self.get_editor_world()
@@ -1658,9 +1659,15 @@ class TestPythonAPIs(metaclass=Singleton):
             msgs.append("Struct created.")
             # 2 add items
             self.add_test_log("add_variable")
-            unreal.PythonStructLib.add_variable(created_struct, category="real", sub_category="double",
+            if unreal.PythonBPLib.get_unreal_version()["major"]==5:
+                unreal.PythonStructLib.add_variable(created_struct, category="real", sub_category="double" ,
                                                 sub_category_object=None, container_type_value=1, # array
                                                 is_reference=False, friendly_name="my_float_vars")
+            else:
+                unreal.PythonStructLib.add_variable(created_struct, category="float", sub_category="",
+                                                    sub_category_object=None, container_type_value=1,  # array
+                                                    is_reference=False, friendly_name="my_float_vars")
+
             unreal.PythonStructLib.add_variable(created_struct, "bool", "", None, 0, False, friendly_name="my_bool_var")
             unreal.PythonStructLib.add_variable(created_struct, "struct", "", unreal.Transform.static_struct(), 0, False, "my_transform_var")
             unreal.PythonStructLib.add_variable(created_struct, "object", "", unreal.StaticMesh.static_class(), 0, False, "my_mesh_var")
@@ -1711,10 +1718,18 @@ class TestPythonAPIs(metaclass=Singleton):
             assert False == unreal.PythonStructLib.is_unique_friendly_name(created_struct, "my_transform_var"), "my_transform_var not unique friendly name"
             assert unreal.PythonStructLib.is_unique_friendly_name(created_struct, "my_dict_var"), "my_transform_var is not unique friendly name"
             # 8 default value of var
+            self.add_test_log("get_guid_from_friendly_name")
             transform_guid = unreal.PythonStructLib.get_guid_from_friendly_name(created_struct, "my_transform_var")
-            self.add_test_log("get_variable_default_value 1")
+            print(f"get_guid_from_friendly_name: {transform_guid}")
+            self.add_test_log("get_variable_default_value by transform_guid")
             defualt_value = unreal.PythonStructLib.get_variable_default_value(created_struct, transform_guid)
-            assert defualt_value == '0.000000,0.000000,0.000000|0.000000,0.000000,-0.000000|1.000000,1.000000,1.000000', f"default_value: {defualt_value} assert failed"
+            self.add_test_log("get_variable_default_value")
+            print(f"defualt_value: {defualt_value}")
+            if unreal.PythonBPLib.get_unreal_version()["major"] == 5:
+                assert defualt_value == '0.000000,0.000000,0.000000|0.000000,0.000000,-0.000000|1.000000,1.000000,1.000000', f"default_value: {defualt_value} assert failed"
+            else:
+                # unreal 4 default value is ""
+                assert defualt_value == '', f"default_value: {defualt_value} assert failed"
             self.add_test_log("change_variable_default_value")
             unreal.PythonStructLib.change_variable_default_value(created_struct, transform_guid
                                                             , "0, 1, 2|20, 30, 10|1, 2, 3")
