@@ -390,7 +390,7 @@ class TestPythonAPIs(metaclass=Singleton):
         default_file = "test.txt"
 
         target_file_path = os.path.abspath(os.path.join(default_path, default_file))
-        assert os.path.exists(target_file_path)
+        assert os.path.exists(target_file_path), f"path: {target_file_path} not exists."
 
         file_types = "Text File (*.txt)|*.txt"
         self.push_call(py_task(self._testcase_open_file_dialog, dialog_title=dialog_title, default_path=default_path
@@ -810,7 +810,7 @@ class TestPythonAPIs(metaclass=Singleton):
             unreal.PythonBPLib.select_component(scene_comp, selected=True, notify=True)
             self.add_test_log("get_selected_components")
             selected = unreal.PythonBPLib.get_selected_components()
-            assert selected and len(selected) == 1 and selected[0] == scene_comp
+            assert selected and len(selected) == 1 and selected[0] == scene_comp, "selected None or not comp"
 
             msgs.append("Select Component Done.")
             # add comp
@@ -1111,7 +1111,7 @@ class TestPythonAPIs(metaclass=Singleton):
             bp_actor = actors[0]
             assert bp_actor.get_actor_label() == bp_c_path.rsplit('/', 1)[-1], f"bp_actor label name {bp_actor.get_actor_label()} != { bp_c_path.rsplit('/', 1)[-1]}"
 
-            assert bp_actor == bp_c_instance
+            assert bp_actor == bp_c_instance, " bp_actor != bp_c_instance"
             self.add_test_log("get_bp_class_hierarchy_package")
             hierarchy_packages = unreal.PythonBPLib.get_bp_class_hierarchy_package(bp_actor.get_class())
             assert len(hierarchy_packages) == 3, f"hierarchy_packages len: {len(hierarchy_packages)} != 3, "
@@ -1217,8 +1217,7 @@ class TestPythonAPIs(metaclass=Singleton):
             unreal.PythonBPLib.set_vector_property(bp_actor, "AVectorValue", unreal.Vector.ONE)
             vector_after = unreal.PythonBPLib.get_vector_property(bp_actor, "AVectorValue")
             assert unreal.Vector.is_nearly_zero(vector_before), f"vector_before: {vector_before} != vector.zero"
-            assert unreal.Vector.is_near_equal(vector_after,
-                                               unreal.Vector.ONE), f"float_After: {vector_after} != vector.one"
+            assert unreal.Vector.is_near_equal(vector_after, unreal.Vector.ONE), f"float_After: {vector_after} != vector.one"
 
             # 8. object
             mesh = unreal.load_asset('/Game/StarterContent/Props/SM_Lamp_Ceiling')
@@ -1510,7 +1509,7 @@ class TestPythonAPIs(metaclass=Singleton):
             self.add_test_log("fix_up_redirectors_in_folder")
             unreal.PythonBPLib.fix_up_redirectors_in_folder(["/Game/_AssetsForTAPythonTestCase/Materials"])
             mat_path = "/Game/_AssetsForTAPythonTestCase/Materials/M_Ori"
-            assert False == unreal.EditorAssetLibrary.does_asset_exist(mat_path), "rediector still exists."
+            assert False == unreal.EditorAssetLibrary.does_asset_exist(mat_path), "redirector still exists."
             succ = True
         except AssertionError as e:
             msgs.append(str(e))
@@ -2030,7 +2029,7 @@ class TestPythonAPIs(metaclass=Singleton):
             # 5.1 get grass component from PythonLandscapeLib
             self.add_test_log("landscape_get_grass_components")
             grass_comps = unreal.PythonLandscapeLib.landscape_get_grass_components(this_land)
-            assert grass_comps, "get glass components None."
+            assert grass_comps, "get grass components None."
             print(f"grass_comps count {len(grass_comps)}")
             # 5.2 get grass component by class
             hisms = unreal.PythonBPLib.get_objects_by_class(this_land.get_world(), unreal.HierarchicalInstancedStaticMeshComponent)
@@ -2738,6 +2737,7 @@ class TestPythonAPIs(metaclass=Singleton):
                 unreal.PythonMaterialLib.connect_material_expressions(esp_sm31, "", exp_feature, "ES3_1")
 
                 unreal.MaterialEditingLibrary.layout_material_expressions(mat)
+                unreal.EditorAssetLibrary.save_asset(mat.get_path_name())
 
 
             # 10.2 get_all_referenced_expressions
@@ -2965,8 +2965,9 @@ class TestPythonAPIs(metaclass=Singleton):
             another_mesh = unreal.load_asset('/Game/_AssetsForTAPythonTestCase/Meshes/SM_QuarterCylinder')
             self.add_test_log("get_imported_original_mat_names")
             mat_names_in_fbx = unreal.PythonMeshLib.get_imported_original_mat_names(another_mesh)
+
             assert mat_names_in_fbx and len(mat_names_in_fbx) > 0, "mat_names_in_fbx: Empty"
-            assert mat_names_in_fbx[0] == "lambert1"
+            assert mat_names_in_fbx[0] == "Fbx Default Material",  f'mat_names_in_fbx[0]: {mat_names_in_fbx[0]} != "Fbx Default Material"'
             msgs.append("Get material name from fbx")
 
             # 4.get_original_lod_data_count
@@ -2978,7 +2979,7 @@ class TestPythonAPIs(metaclass=Singleton):
             self.add_test_log("get_original_lod_mat_names")
             lod_mat_names= unreal.PythonMeshLib.get_original_lod_mat_names(another_mesh, lod_level= 0)
             assert len(lod_mat_names) == lod_data_count, f"len(lod_mat_names): {len(lod_mat_names)} != lod_data_count: {lod_data_count}"
-            assert lod_mat_names[0] == "lambert1"
+            assert lod_mat_names[0] == "Fbx Default Material", f'lod_mat_names[0]: {lod_mat_names[0]} != "Fbx Default Material"'
             # 6. lod is_this_lod_generated_by_mesh_reduction
 
             mesh_subsystem = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
