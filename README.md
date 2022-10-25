@@ -1,14 +1,23 @@
 
-#
-This is a test cases repo for TAPython Plugin
+This is a repository of test cases in which the following will be included:
+
+- [TAPython extended python editor APIs](https://www.tacolor.xyz/pages/ExtendedEditorAPI.html) (100% covered)
+
+- [ChameleonDataAPI](https://www.tacolor.xyz/pages/ChameleonDataAPI.html) (WIP)
+
+![G_017_TestCases_short_s](images/G_017_TestCases_short_s.gif)
+
+Recording video [here.](https://youtu.be/h5x0sb4IdR0)
+
+These test cases are not only helpful to validate the APIs, but are also good examples for developers who want to become familiar with TAPython
 
 ## Require
 
-### TAPython v 1.0.9
+### [TAPython v 1.0.9](https://github.com/cgerchenhp/UE_TAPython_Plugin_Release/releases/tag/v1.0.9-ue5.0.3)
 
 ### Unreal Engine Default StarterContent
 
-### easyocr (optional)
+### [easyocr](https://pypi.org/project/easyocr/) (optional 3rd package)
 
 ## Steps
 
@@ -16,11 +25,15 @@ This is a test cases repo for TAPython Plugin
 
 2. Merge ./TA/TAPython to Your_project/TA/TAPython
 
-3. Menu item on mainbar: Test Cases - Test PythonLibs
+   UI json: TA/TAPython/Python/ChameleonTestCases/TestPythonAPIs.json
 
+3. The menu item on main bar: Test Cases - Test PythonLibs
 
+![063_testcases_menu](images/063_testcases_menu.png)
 
-File List in
+## Asset List
+
+Asset List in directory _AssetsForTAPythonTestCase
 
     Content\_AssetsForTAPythonTestCase\BP_A.uasset
     Content\_AssetsForTAPythonTestCase\BP_B.uasset
@@ -34,5 +47,3 @@ File List in
     Content\_AssetsForTAPythonTestCase\Maps\OpenWorld\Sub_x01_y00.umap
     Content\_AssetsForTAPythonTestCase\Maps\OpenWorld\Sub_x01_y01.umap
     Content\_AssetsForTAPythonTestCase\Meshes\SM_QuarterCylinder.uasset
-
-
