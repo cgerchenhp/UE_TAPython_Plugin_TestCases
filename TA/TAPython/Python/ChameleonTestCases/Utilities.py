@@ -30,7 +30,7 @@ def py_task(func, *args, **kwargs):
         if result:
             for x in result[1]:
                 if x.output:
-                    instance_name = x.output[1:-1]
+                    instance_name = x.output.strip()[1:-1]
                 break
         assert instance_name, f"instance_name: {instance_name}"
         cmd = f"{instance_name}.{function_name}({arg_str})"
