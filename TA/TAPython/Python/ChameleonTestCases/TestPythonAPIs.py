@@ -2228,6 +2228,8 @@ class TestPythonAPIs(metaclass=Singleton):
                             per_proxy_height[index] = (1-v) * 0.5 * 65535
                     unreal.PythonLandscapeLib.set_heightmap_data(lands[tile_x + tile_y *3], per_proxy_height)
 
+            unreal.PythonLandscapeLib.recalculate_normals(center_land)
+
             unreal.PythonBPLib.select_none()
             for land in lands:
                 unreal.PythonBPLib.select_actor(land, selected=True, notify=True)
